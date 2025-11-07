@@ -9,16 +9,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     colmena.url = "github:zhaofengli/colmena";
+    agenix.url = "github:ryantm/agenix";
   };
   outputs =
     {
+      agenix,
       colmena,
+      disko,
       nixpkgs,
       self,
       ...
     }@inputs:
     let
       system = "x86_64-linux";
+      inherit (self) outputs;
     in
     {
       colmenaHive = colmena.lib.makeHive self.outputs.colmena;
@@ -27,7 +31,7 @@
           nixpkgs = import nixpkgs {
             inherit system;
           };
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs outputs; };
         };
         kaladesh = {
           deployment = {
@@ -41,13 +45,14 @@
             inputs.hardware.nixosModules.common-cpu-intel
             inputs.hardware.nixosModules.common-gpu-nvidia-nonprime
             inputs.hardware.nixosModules.common-pc-ssd
+            inputs.agenix.nixosModules.default
           ];
         };
       };
       # Here specifically for nix repl eval
       nixosConfigurations = {
         kaladesh = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs outputs; };
           inherit system;
           modules = [
             ./hosts/kaladesh
@@ -55,6 +60,7 @@
             inputs.hardware.nixosModules.common-cpu-intel
             inputs.hardware.nixosModules.common-gpu-nvidia-nonprime
             inputs.hardware.nixosModules.common-pc-ssd
+            inputs.agenix.nixosModules.default
           ];
         };
       };

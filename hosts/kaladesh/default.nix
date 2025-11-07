@@ -58,6 +58,7 @@ in
       efiSysMountPoint = "/boot";
     };
   };
+  time.timeZone = "America/Chicago";
   networking = {
     hostName = "kaladesh";
     firewall.enable = false;
