@@ -44,5 +44,19 @@
           ];
         };
       };
+      # Here specifically for nix repl eval
+      nixosConfigurations = {
+        kaladesh = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; };
+          inherit system;
+          modules = [
+            ./hosts/kaladesh
+            inputs.disko.nixosModules.disko
+            inputs.hardware.nixosModules.common-cpu-intel
+            inputs.hardware.nixosModules.common-gpu-nvidia-nonprime
+            inputs.hardware.nixosModules.common-pc-ssd
+          ];
+        };
+      };
     };
 }

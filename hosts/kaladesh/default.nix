@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -72,10 +71,10 @@ in
       initialHashedPassword = "$7$CU..../....i89TMSGgWw3qQucMUF3WQ/$NbRbMXyTiIM2jMaxKS1vHhTtZ1M7SgbB16eltu2ZYk7";
       isNormalUser = true;
       extraGroups = [
+        "networkmanager"
+        "podman"
         "wheel"
-      ]
-      ++ lib.optional config.networking.networkmanager.enable "networkmanager"
-      ++ lib.optional config.virtualisation.docker.enable "docker";
+      ];
       uid = 1000;
       openssh.authorizedKeys.keys = sshKeys;
     };
