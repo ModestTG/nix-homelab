@@ -43,7 +43,6 @@
       };
       certificatesResolvers.letsencrypt.acme = {
         email = "elliotweishaar27@gmail.com";
-        caServer = "https://acme-staging-v02.api.letsencrypt.org/directory";
         storage = "${config.services.traefik.dataDir}/acme.json";
         dnsChallenge = {
           provider = "cloudflare";
@@ -62,6 +61,7 @@
           rule = "Host(`traefik-int.ewhomelab.com`)";
           service = "api@internal";
           entrypoints = [ "websecure" ];
+          tls.certResolver = "letsencrypt";
         };
       };
     };

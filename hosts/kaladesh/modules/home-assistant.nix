@@ -9,4 +9,17 @@
     ];
     extraOptions = [ "--network=host" ];
   };
+  services.traefik.dynamicConfigOptions.http = {
+    routers.home-assistant = {
+      entrypoints = [ "websecure" ];
+      rule = "Host(`hass.ewhomelab.com`)";
+      tls.certResolver = "letsencrypt";
+      service = "home-assistant";
+    };
+    services.home-assistant.loadBalancer.servers = [
+      {
+        url = "http://localhost:8123";
+      }
+    ];
+  };
 }
