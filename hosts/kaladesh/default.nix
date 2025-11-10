@@ -5,9 +5,7 @@
 }:
 
 let
-  sshKeys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIElkoT9GhRczgqRRpdC4gfw/z1eShyqto4AKQnk3nka6" # dominaria
-  ];
+  sshKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIElkoT9GhRczgqRRpdC4gfw/z1eShyqto4AKQnk3nka6" ];
 in
 {
   imports = [
@@ -17,6 +15,14 @@ in
   ];
 
   ### NixOS configuration
+  age.secrets = {
+    kaladesh-ssh-privateKey = {
+      file = ../../secrets/kaladesh-ssh-privateKey.age;
+      mode = "600";
+      owner = "eweishaar";
+      group = "users";
+    };
+  };
   hardware = {
     nvidia = {
       open = true;
@@ -46,16 +52,27 @@ in
     wget
     zip
   ];
-  programs.neovim.enable = true;
-  boot.loader = {
-    grub.enable = false;
-    systemd-boot = {
-      enable = true;
-      configurationLimit = 20;
+  programs = {
+    neovim.enable = true;
+    ssh = {
+      startAgent = true;
+      extraConfig = ''
+        AddKeysToAgent yes
+        IdentityFile ${config.age.secrets.kaladesh-ssh-privateKey.path}
+      '';
     };
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot";
+  };
+  boot = {
+    loader = {
+      grub.enable = false;
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 20;
+      };
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
     };
   };
   time.timeZone = "America/Chicago";
@@ -98,19 +115,21 @@ in
     ];
   };
   nixpkgs.config.allowUnfree = true;
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "yes";
-      KexAlgorithms = [
-        "sntrup761x25519-sha512@openssh.com"
-        "curve25519-sha256"
-        "curve25519-sha256@libssh.org"
-        "diffie-hellman-group18-sha512"
-        "diffie-hellman-group-exchange-sha256"
-        "diffie-hellman-group14-sha256"
-      ];
+  services = {
+    openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = false;
+        PermitRootLogin = "yes";
+        KexAlgorithms = [
+          "sntrup761x25519-sha512@openssh.com"
+          "curve25519-sha256"
+          "curve25519-sha256@libssh.org"
+          "diffie-hellman-group18-sha512"
+          "diffie-hellman-group-exchange-sha256"
+          "diffie-hellman-group14-sha256"
+        ];
+      };
     };
   };
   security = {
@@ -134,6 +153,10 @@ in
         }
       ];
     };
+  };
+  virtualisation = {
+    podman.enable = true;
+    oci-containers.backend = "podman";
   };
   system.stateVersion = "25.05";
 }

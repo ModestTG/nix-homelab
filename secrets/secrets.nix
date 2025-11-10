@@ -8,7 +8,9 @@ let
   ];
 in
 {
-  # Create keys using `nix run github:ryantm/agenix -- -e <secretName>.age` from this folder
+  # Create keys using `agenix -e <secretName>` from this folder
   # this file is not imported into the nix config
   "cf-dns-api-token.age".publicKeys = systems;
+  "kaladesh-ssh-privateKey.age".publicKeys = systems;
+  "restic-password.age".publicKeys = systems;
 }
