@@ -1,6 +1,7 @@
 {
   imports = [
     ./home-assistant.nix
+    ./nfs.nix
     ./traefik.nix
   ];
   virtualisation = {
